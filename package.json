@@ -1,6 +1,6 @@
 {
   "name": "jshint-brunch",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Adds JSHint support to brunch.",
   "author": "Paul Miller (http://paulmillr.com/)",
   "homepage": "https://github.com/brunch/jshint-brunch",
