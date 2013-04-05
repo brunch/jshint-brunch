@@ -10,7 +10,11 @@ module.exports = class JSHintLinter
   extension: 'js'
 
   constructor: (@config) ->
-    cfg = @config?.jshint ? {}
+    cfg = @config?.plugins?.jshint ? @config?.jshint ? {}
+    
+    if cfg is @config?.jshint
+      console.warn "Warning: config.jshint is deprecated, move it to config.plugins.jshint"
+
     @options = cfg.options
     @globals = cfg.globals
     @pattern = cfg.pattern ? ///^#{@config.paths.app}.*\.js$///
