@@ -12,7 +12,7 @@ module.exports = class JSHintLinter
   constructor: (@config) ->
     cfg = @config?.plugins?.jshint ? @config?.jshint ? {}
     
-    if cfg is @config?.jshint
+    if cfg is @config?.jshint?
       console.warn "Warning: config.jshint is deprecated, move it to config.plugins.jshint"
 
     @options = cfg.options
