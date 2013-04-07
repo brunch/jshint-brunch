@@ -3,11 +3,13 @@ Adds JSHint support to
 [brunch](http://brunch.io).
 
 ## Usage
-Add `"jshint-brunch": "x.y.z"` to `package.json` of your brunch app.
+Install the plugin via npm with `npm install --save jshint-brunch`.
 
-Pick a plugin version that corresponds to your minor (y) brunch version.
+Or, do manual install:
 
-If you want to use git version of plugin, add
+* Add `"jshint-brunch": "x.y.z"` to `package.json` of your brunch app.
+  Pick a plugin version that corresponds to your minor (y) brunch version.
+* If you want to use git version of plugin, add
 `"jshint-brunch": "git+ssh://git@github.com:brunch/jshint-brunch.git"`.
 
 By default, only files in your `config.paths.app` are linted.
