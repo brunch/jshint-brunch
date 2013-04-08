@@ -18,13 +18,14 @@ You can customize jshint config by changing brunch config:
 
 ```coffeescript
 config =
-  jshint:
-    pattern: /^app\/.*\.js$/
-    options:
-      bitwise: true
-      curly: true
-    globals:
-      jQuery: true
+  plugins:
+    jshint:
+      pattern: /^app\/.*\.js$/
+      options:
+        bitwise: true
+        curly: true
+      globals:
+        jQuery: true
 ```
 
 Every sub-option (`pattern`, `options`, `globals`) is optional.
