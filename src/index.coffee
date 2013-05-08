@@ -4,13 +4,19 @@ formatError = (error) ->
   evidence = (if error.evidence then "\n\n#{error.evidence}\n" else '\n')
   "#{error.reason} #{error.id or ''} at line #{error.line}, column #{error.character}"
 
+clone = (obj) ->
+  return obj if not obj? or typeof obj isnt 'object'
+  copied = new obj.constructor()
+  copied[key] = clone val for key, val of obj
+  copied
+
 module.exports = class JSHintLinter
   brunchPlugin: yes
   type: 'javascript'
   extension: 'js'
 
   constructor: (@config) ->
-    cfg = @config?.plugins?.jshint ? @config?.jshint ? {}
+    cfg = clone @config?.plugins?.jshint ? @config?.jshint ? {}
     
     if @config?.jshint
       console.warn "Warning: config.jshint is deprecated, move it to config.plugins.jshint"
