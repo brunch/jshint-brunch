@@ -4,9 +4,11 @@ describe('Plugin', function() {
   beforeEach(function() {
     plugin = new Plugin({
       paths: {app: 'app'},
-      jshint: {
-        options: {eqnull: true},
-        globals: {stuff: true}
+      plugins: {
+        jshint: {
+          options: {eqnull: true},
+          globals: {stuff: true}
+        }
       }
     });
   });
