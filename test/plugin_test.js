@@ -6,7 +6,7 @@ describe('Plugin', function() {
       paths: {app: 'app'},
       plugins: {
         jshint: {
-          options: {eqnull: true},
+          options: {eqnull: true, undef: true},
           globals: {stuff: true}
         }
       }
@@ -43,7 +43,7 @@ describe('Plugin', function() {
     var content = 'function a() {return stuff == null;}'
 
     plugin.lint(content, 'file.js', function(error) {
-      expect(error).not.to.be.ok;
+      expect(error).to.equal(undefined)
       done();
     });
   });
