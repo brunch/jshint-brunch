@@ -43,13 +43,13 @@ module.exports = class JSHintLinter
           delete @options.globals;
       catch e
         if e.code
-          @error = e.toString().replace "Error: #{e.code}, ", ""
+          error = e.toString().replace "Error: #{e.code}, ", ""
         else
-          @error = ".jshintrc file #{e}"
-      finally
-        if @error
-          console.error @error
-          process.exit 1
+          error = ".jshintrc file #{e}"
+      
+      if error
+        console.error error
+        process.exit 1
 
 
   lint: (data, path, callback) ->
