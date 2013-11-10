@@ -30,6 +30,28 @@ module.exports = class JSHintLinter
       console.warn "Warning: config.jshint is deprecated, move it to config.plugins.jshint"
       process.exit 1
 
+
+    if not @config.plugins.jshint.options
+      filename = path.join(process.cwd(), ".jshintrc")
+      try
+        stats = fs.statSync(filename)
+
+        if stats.isFile()
+          buff = fs.readFileSync filename
+          @options = JSON.parse(removeComments(buff.toString()))
+          @globals = @options.globals
+          delete @options.globals;
+      catch e
+        if e.code
+          @error = e.toString().replace "Error: #{e.code}, ", ""
+        else
+          @error = ".jshintrc file #{e}"
+      finally
+        if @error
+          console.error @error
+          process.exit 1
+
+
   lint: (data, path, callback) ->
     success = jshint data, @options, @globals
 
@@ -46,5 +68,4 @@ module.exports = class JSHintLinter
     if @warn_only? and error?
       error = "warn: #{error}"
     
-    callback error
-                                        
+    callback error                                        

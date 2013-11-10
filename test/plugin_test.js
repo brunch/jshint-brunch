@@ -25,7 +25,7 @@ describe('Plugin', function() {
     var content = 'var a = 228;'
 
     plugin.lint(content, 'file.js', function(error) {
-      expect(error).not.to.be.ok;
+      expect(error).to.not.be.ok;
       done();
     });
   });
@@ -46,5 +46,40 @@ describe('Plugin', function() {
       expect(error).to.equal(undefined)
       done();
     });
+  });
+
+  it('should not return errors if warn_only is enabled', function(done){
+    plugin.warn_only = true
+    var content = 'a = 228;;'
+
+    plugin.lint(content, 'file.js', function(warn){
+      expect(warn).to.match(/^warn/);
+      expect(warn).to.be.ok;
+      done();
+    });
+  });
+
+  it('should read options and globals from .jshintrc', function(done){
+    // remove the preloaded jshint options
+    delete plugin.config.plugins.jshint.options
+    delete plugin.config.plugins.jshint.globals
+  
+
+    var jshintrc = {
+      globals: {
+        stuff: true
+      },
+      undef: true
+    }
+
+    fs = new fakefs;
+    fs.file('.jshintrc', JSON.stringify(jshintrc));
+    fs.patch()   
+
+    plugin.constructor(plugin.config);
+    expect(plugin.globals).to.eql(jshintrc.globals);
+    delete(jshintrc.globals);
+    expect(plugin.options).to.eql(jshintrc);
+    done();
   });
 });
