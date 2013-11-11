@@ -18,20 +18,17 @@ module.exports = class JSHintLinter
   extension: 'js'
 
   constructor: (@config) ->
-    cfg = @config?.plugins?.jshint ? @config?.jshint ? {}
+    if @config.jshint?
+      console.warn "Warning: config.jshint is deprecated, move it to config.plugins.jshint"
+      process.exit 1
 
+    cfg = @config?.plugins?.jshint ? @config?.jshint ? {}
     @options = if cfg.options? then cfg.options
     @globals = cfg.globals
     @pattern = cfg.pattern ? ///^#{@config.paths.app}.*\.js$///
     @warn_only = cfg.warn_only
-    @error = false
 
-    if @config?.jshint
-      console.warn "Warning: config.jshint is deprecated, move it to config.plugins.jshint"
-      process.exit 1
-
-
-    if not @config.plugins.jshint.options
+    if not @config.plugins.jshint.options?
       filename = path.join(process.cwd(), ".jshintrc")
       try
         stats = fs.statSync(filename)
@@ -46,11 +43,11 @@ module.exports = class JSHintLinter
           error = e.toString().replace "Error: #{e.code}, ", ""
         else
           error = ".jshintrc file #{e}"
-      
-      if error
+
+      if error?
         console.error error
         process.exit 1
-
+    
 
   lint: (data, path, callback) ->
     success = jshint data, @options, @globals
