@@ -19,6 +19,6 @@
   "devDependencies": {
     "mocha": "1.11.0",
     "chai": "1.7.0",
-    "fakefs": "0.2.1"
+    "fake-fs": "0.2.1"
   }
 }
