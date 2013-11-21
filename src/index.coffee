@@ -19,8 +19,7 @@ module.exports = class JSHintLinter
 
   constructor: (@config) ->
     if @config.jshint?
-      console.warn "Warning: config.jshint is deprecated, move it to config.plugins.jshint"
-      process.exit 1
+      throw "config.jshint is deprecated, move it to config.plugins.jshint"
 
     cfg = @config?.plugins?.jshint ? @config?.jshint ? {}
     @options = if cfg.options? then cfg.options
@@ -44,10 +43,7 @@ module.exports = class JSHintLinter
         else
           error = ".jshintrc file #{e}"
 
-      if error?
-        console.error error
-        process.exit 1
-    
+        throw error
 
   lint: (data, path, callback) ->
     success = jshint data, @options, @globals
