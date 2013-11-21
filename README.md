@@ -30,6 +30,10 @@ config =
 
 Every sub-option (`pattern`, `options`, `globals`) is optional.
 
+`warn_only` if set to true then jshint errors will only be displayed as warnings. This allows the build process to continue rather than exiting.
+
+Alternatively if you prefer to use a.jshintrc file then remove all jshint sub-options from the brunch config and place your .jshintrc file in the same location as brunch's config.
+
 ## License
 
 The MIT License (MIT)
