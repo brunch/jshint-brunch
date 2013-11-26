@@ -51,8 +51,7 @@ module.exports = class JSHintLinter
         .map(formatError)
         .join('\n')
 
-
-    if @warn_only? and error?
+    if @warn_only and error?
       error = "warn: #{error}"
 
     callback error
