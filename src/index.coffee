@@ -38,6 +38,9 @@ module.exports = class JSHintLinter
           @options = JSON.parse removeComments buff.toString()
           {@globals} = @options
           delete @options.globals
+      catch e
+        e = e.toString().replace "Error: ENOENT, ", ""
+        console.warn ".jshintrc parsing error: #{e}. jshint will run with default options."
 
   lint: (data, path, callback) ->
     success = jshint data, @options, @globals
