@@ -1,3 +1,7 @@
+# jshint-brunch 1.7.0 (26 November 2013)
+* Allow using `.jshintrc` file to set options
+* Created `warnOnly` option to allow build to proceed despite lint errors.
+
 # jshint-brunch 1.6.0 (22 June 2013)
 * Updated JSHint to 2.1.
 
