@@ -26,13 +26,17 @@ config =
         curly: true
       globals:
         jQuery: true
+      warnOnly: true
 ```
 
-Every sub-option (`pattern`, `options`, `globals`) is optional.
+Every sub-option (`pattern`, `options`, `globals`, `warnOnly`) is optional.
 
-`warn_only` if set to true then jshint errors will only be displayed as warnings. This allows the build process to continue rather than exiting.
+If `warnOnly` is set to true then jshint errors will output as console warnings.
+This allows the build process to continue rather than exiting on any linter errors.
 
-Alternatively if you prefer to use a.jshintrc file then remove all jshint sub-options from the brunch config and place your .jshintrc file in the same location as brunch's config.
+Alternatively if you prefer to use a `.jshintrc` file, remove all jshint options
+from the brunch config and place your `.jshintrc` file in the same location as
+your brunch config.
 
 ## License
 
