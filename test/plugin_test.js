@@ -49,8 +49,8 @@ describe('Plugin', function() {
   });
 
   it('should not return errors if warn_only is enabled', function(done){
-    plugin.warn_only = true
-    var content = 'a = 228;;'
+    plugin.warnOnly = true
+    var content = 'var a = 228;;'
 
     plugin.lint(content, 'file.js', function(warn){
       expect(warn).to.match(/^warn/);
