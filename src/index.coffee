@@ -25,7 +25,7 @@ module.exports = class JSHintLinter
     @options = if cfg.options? then cfg.options
     @globals = cfg.globals
     @pattern = cfg.pattern ? ///^#{@config.paths.app}.*\.js$///
-    @warn_only = cfg.warn_only
+    @warnOnly = cfg.warnOnly
 
     unless @options
       filename = path.join process.cwd(), ".jshintrc"
@@ -51,7 +51,7 @@ module.exports = class JSHintLinter
         .map(formatError)
         .join('\n')
 
-    if @warn_only and error?
+    if @warnOnly and error?
       error = "warn: #{error}"
 
     callback error
