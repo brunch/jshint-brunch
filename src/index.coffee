@@ -27,16 +27,16 @@ module.exports = class JSHintLinter
     @pattern = cfg.pattern ? ///^#{@config.paths.app}.*\.js$///
     @warn_only = cfg.warn_only
 
-    if not @config.plugins.jshint.options?
-      filename = path.join(process.cwd(), ".jshintrc")
+    unless @options
+      filename = path.join process.cwd(), ".jshintrc"
       try
         stats = fs.statSync(filename)
 
         if stats.isFile()
           buff = fs.readFileSync filename
-          @options = JSON.parse(removeComments(buff.toString()))
-          @globals = @options.globals
-          delete @options.globals;
+          @options = JSON.parse removeComments buff.toString()
+          {@globals} = @options
+          delete @options.globals
       catch e
         if e.code
           error = e.toString().replace "Error: #{e.code}, ", ""
