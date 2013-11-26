@@ -18,8 +18,8 @@ module.exports = class JSHintLinter
   extension: 'js'
 
   constructor: (@config) ->
-    if @config.jshint?
-      throw "config.jshint is deprecated, move it to config.plugins.jshint"
+    if 'jshint' of @config
+      console.warn "Warning: config.jshint is deprecated, please move it to config.plugins.jshint"
 
     cfg = @config?.plugins?.jshint ? @config?.jshint ? {}
     @options = if cfg.options? then cfg.options
@@ -60,5 +60,5 @@ module.exports = class JSHintLinter
 
     if @warn_only? and error?
       error = "warn: #{error}"
-    
-    callback error                                        
+
+    callback error
