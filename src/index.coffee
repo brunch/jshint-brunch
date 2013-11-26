@@ -29,6 +29,7 @@ module.exports = class JSHintLinter
 
     unless @options
       filename = path.join process.cwd(), ".jshintrc"
+      # read settings from .jshintrc file if exists
       try
         stats = fs.statSync(filename)
 
@@ -37,13 +38,6 @@ module.exports = class JSHintLinter
           @options = JSON.parse removeComments buff.toString()
           {@globals} = @options
           delete @options.globals
-      catch e
-        if e.code
-          error = e.toString().replace "Error: #{e.code}, ", ""
-        else
-          error = ".jshintrc file #{e}"
-
-        throw error
 
   lint: (data, path, callback) ->
     success = jshint data, @options, @globals
@@ -53,9 +47,9 @@ module.exports = class JSHintLinter
       return
     else
       error = jshint.errors
-      .filter((error) -> error?)
-      .map(formatError)
-      .join('\n')
+        .filter((error) -> error?)
+        .map(formatError)
+        .join('\n')
 
 
     if @warn_only? and error?
