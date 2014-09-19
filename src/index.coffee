@@ -2,15 +2,12 @@ jshint = require('jshint').JSHINT
 jshintcli = require('jshint/src/cli')
 fs = require('fs')
 path = require('path')
+logger = require('loggy')
 
-formatError = (error) ->
-  evidence = (if error.evidence then "\n\n#{error.evidence}\n" else '\n')
-  "#{error.reason} #{error.id or ''} at line #{error.line}, column #{error.character}"
-
- removeComments = (str) ->
-   str = str or ""
-   str = str.replace /\/\*(?:(?!\*\/)[\s\S])*\*\//g, ""
-   str = str.replace /\/\/[^\n\r]*/g, "" # Everything after '//'
+removeComments = (str) ->
+  str = str or ""
+  str = str.replace /\/\*(?:(?!\*\/)[\s\S])*\*\//g, ""
+  str = str.replace /\/\/[^\n\r]*/g, "" # Everything after '//'
 
 module.exports = class JSHintLinter
   brunchPlugin: yes
@@ -24,7 +21,7 @@ module.exports = class JSHintLinter
     cfg = @config?.plugins?.jshint ? @config?.jshint ? {}
     @options = if cfg.options? then cfg.options
     @globals = cfg.globals
-    @pattern = cfg.pattern ? ///^#{@config.paths.app}.*\.js$///
+    @pattern = cfg.pattern ? ///(#{@config.paths?.watched?.join("|") or "app"}).*\.js$///
     @warnOnly = cfg.warnOnly
 
     unless @options
@@ -50,11 +47,8 @@ module.exports = class JSHintLinter
       return
     else
       error = jshint.errors
-        .filter((error) -> error?)
-        .map(formatError)
-        .join('\n')
+      error.forEach (e)=> logger.warn "#{path}:#{e.line}:#{e.character} #{e.reason} #{e.id or ''}" if e?
 
-    if @warnOnly and error?
-      error = "warn: #{error}"
-
-    callback error
+    msg = "JSHint detected #{error.length} problems.\n"
+    msg = ('warn: ' + msg) if @warnOnly
+    callback msg

@@ -14,7 +14,8 @@
     "test": "node_modules/.bin/mocha --require test/common.js"
   },
   "dependencies": {
-    "jshint": "~2.3.0"
+    "jshint": "~2.5.5",
+    "loggy": "~0.2.0"
   },
   "devDependencies": {
     "mocha": "1.11.0",
