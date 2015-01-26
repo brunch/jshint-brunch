@@ -3,6 +3,13 @@ jshintcli = require('jshint/src/cli')
 fs = require('fs')
 path = require('path')
 logger = require('loggy')
+chalk = require('chalk')
+pluralize = require('pluralize')
+
+pad = (str, length) ->
+  while str.length < length
+    str = ' ' + str
+  str
 
 removeComments = (str) ->
   str = str or ""
@@ -46,9 +53,19 @@ module.exports = class JSHintLinter
       callback()
       return
     else
-      error = jshint.errors
-      error.forEach (e)=> logger.warn "#{path}:#{e.line}:#{e.character} #{e.reason} #{e.id or ''}" if e?
+      errors = jshint.errors
+      errorMsg = for error in errors
+        do (error) =>
+          """
+          #{pad error.line.toString(), 7} | #{chalk.gray error.evidence}
+          #{pad "^", 10 + error.character} #{chalk.bold error.reason}
+          """
 
-    msg = "JSHint detected #{error.length} problems.\n"
-    msg = ('warn: ' + msg) if @warnOnly
+    errorMsg.unshift "JSHint detected #{errors.length} #{pluralize 'problem', errors.length}."
+    errorMsg.push '\n'
+
+
+    msg = errorMsg.join '\n\n'
+    msg = "warn: #{msg}" if @warnOnly
+
     callback msg
