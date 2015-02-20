@@ -2,7 +2,6 @@ jshint = require('jshint').JSHINT
 jshintcli = require('jshint/src/cli')
 fs = require('fs')
 path = require('path')
-logger = require('loggy')
 chalk = require('chalk')
 pluralize = require('pluralize')
 
@@ -26,6 +25,8 @@ module.exports = class JSHintLinter
       console.warn "Warning: config.jshint is deprecated, please move it to config.plugins.jshint"
 
     cfg = @config?.plugins?.jshint ? @config?.jshint ? {}
+    reporterName = if cfg.reporter? then require(cfg.reporter) else null
+    @reporter = if reporterName? then require(reporterName) else null
     @options = if cfg.options? then cfg.options
     @globals = cfg.globals
     @pattern = cfg.pattern ? ///(#{@config.paths?.watched?.join("|") or "app"}).*\.js$///
@@ -54,18 +55,31 @@ module.exports = class JSHintLinter
       return
     else
       errors = jshint.errors
-      errorMsg = for error in errors
-        do (error) =>
-          """
-          #{pad error.line.toString(), 7} | #{chalk.gray error.evidence}
-          #{pad "^", 10 + error.character} #{chalk.bold error.reason}
-          """
+      if @reporter
+        results = []
+        for error in errors
+          do (error) =>
+            if error?
+              results.push
+                file: path,
+                error: error
+        @reporter.reporter results
+        msg = if @warnOnly then 'warn: JSHint' else ' '
+      else
+        # TODO: this seems to be broken. should be fixed
+        errorMsg = []
+        for error in errors
+          do (error) =>
+            if error?
+              console.log error
+              """
+              #{pad error.line.toString(), 7} | #{chalk.gray error.evidence}
+              #{pad "^", 10 + error.character} #{chalk.bold error.reason}
+              """
 
-    errorMsg.unshift "JSHint detected #{errors.length} #{pluralize 'problem', errors.length}."
-    errorMsg.push '\n'
+              errorMsg.unshift "JSHint detected #{errors.length} #{pluralize 'problem', errors.length}."
+              errorMsg.push '\n'
 
-
-    msg = errorMsg.join '\n\n'
-    msg = "warn: #{msg}" if @warnOnly
-
-    callback msg
+          msg = errorMsg.join '\n\n'
+          msg = "warn: #{msg}" if @warnOnly
+      callback msg
