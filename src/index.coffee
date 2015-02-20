@@ -54,32 +54,34 @@ module.exports = class JSHintLinter
       callback()
       return
     else
-      errors = jshint.errors
+      errors = jshint.errors.filter (elem) -> elem?
+
       if @reporter
         results = []
         for error in errors
           do (error) =>
-            if error?
-              results.push
-                file: path,
-                error: error
+            results.push
+              file: path,
+              error: error
         @reporter.reporter results
-        msg = if @warnOnly then 'warn: JSHint' else ' '
+        msg = if @warnOnly then 'warn: (JSHint)' else 'err: (JSHint)'
       else
-        # TODO: this seems to be broken. should be fixed
         errorMsg = []
         for error in errors
           do (error) =>
-            if error?
-              console.log error
-              """
-              #{pad error.line.toString(), 7} | #{chalk.gray error.evidence}
-              #{pad "^", 10 + error.character} #{chalk.bold error.reason}
-              """
+            if error.evidence?.length < 160
+              errorMsg.push """
+                            #{pad error.line.toString(), 7} | #{chalk.gray error.evidence}
+                            #{pad "^", 10 + error.character} #{chalk.bold error.reason}
+                            """
+            else
+              errorMsg.push """
+                            #{pad error.line.toString(), 7} | col: #{error.character}: #{chalk.bold error.reason}
+                            """
 
-              errorMsg.unshift "JSHint detected #{errors.length} #{pluralize 'problem', errors.length}."
-              errorMsg.push '\n'
+        errorMsg.unshift "JSHint detected #{errors.length} #{pluralize 'problem', errors.length}:"
+        errorMsg.push '\n'
 
-          msg = errorMsg.join '\n\n'
-          msg = "warn: #{msg}" if @warnOnly
+        msg = errorMsg.join '\n'
+        msg = "warn: #{msg}" if @warnOnly
       callback msg
