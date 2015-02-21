@@ -25,12 +25,12 @@ module.exports = class JSHintLinter
       console.warn "Warning: config.jshint is deprecated, please move it to config.plugins.jshint"
 
     cfg = @config?.plugins?.jshint ? @config?.jshint ? {}
-    reporterName = if cfg.reporter? then require(cfg.reporter) else null
-    @reporter = if reporterName? then require(reporterName) else null
     @options = if cfg.options? then cfg.options
     @globals = cfg.globals
     @pattern = cfg.pattern ? ///(#{@config.paths?.watched?.join("|") or "app"}).*\.js$///
     @warnOnly = cfg.warnOnly
+    @reporter = if cfg.reporter? then require(require(cfg.reporter))
+    @reporterOptions = cfg.reporterOptions
 
     unless @options
       filename = path.join process.cwd(), ".jshintrc"
@@ -49,39 +49,38 @@ module.exports = class JSHintLinter
 
   lint: (data, path, callback) ->
     success = jshint data, @options, @globals
-
     if success
       callback()
       return
     else
-      errors = jshint.errors.filter (elem) -> elem?
+      errors = jshint.errors.filter (error) -> error?
 
       if @reporter
-        results = []
-        for error in errors
-          do (error) =>
-            results.push
-              file: path,
-              error: error
-        @reporter.reporter results
-        msg = if @warnOnly then 'warn: (JSHint)' else 'err: (JSHint)'
+        results = errors.map (error) ->
+          error: error
+          file: path
+
+        # some reporters accept an options object as a third parameter
+        # examples: jshint-stylish, jshint-summary
+        @reporter.reporter results, undefined, @reporterOptions
+
+        msg = "#{chalk.gray 'via JSHint'}"
       else
-        errorMsg = []
-        for error in errors
+        errorMsg = for error in errors
           do (error) =>
-            if error.evidence?.length < 160
-              errorMsg.push """
-                            #{pad error.line.toString(), 7} | #{chalk.gray error.evidence}
-                            #{pad "^", 10 + error.character} #{chalk.bold error.reason}
-                            """
+            if Math.max(error.evidence?.length, error.character + error.reason.length) <= 120
+              """
+              #{pad error.line.toString(), 7} | #{chalk.gray error.evidence}
+              #{pad "^", 10 + error.character} #{chalk.bold error.reason}
+              """
             else
-              errorMsg.push """
-                            #{pad error.line.toString(), 7} | col: #{error.character}: #{chalk.bold error.reason}
-                            """
+              """
+              #{pad error.line.toString(), 7} | col: #{error.character} | #{chalk.bold error.reason}
+              """
 
         errorMsg.unshift "JSHint detected #{errors.length} #{pluralize 'problem', errors.length}:"
         errorMsg.push '\n'
 
         msg = errorMsg.join '\n'
-        msg = "warn: #{msg}" if @warnOnly
+      msg = "warn: #{msg}" if @warnOnly
       callback msg
