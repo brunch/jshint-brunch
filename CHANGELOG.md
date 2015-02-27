@@ -1,3 +1,8 @@
+# jshint-brunch 1.8.0 (27 February 2015)
+* Added support for third-party reporters
+* Cleaned up formatting of default error output
+* Set compatibility with any 2.* version of jshint
+
 # jshint-brunch 1.7.0 (26 November 2013)
 * Allow using `.jshintrc` file to set options
 * Created `warnOnly` option to allow build to proceed despite lint errors.
