@@ -16,12 +16,12 @@
   "dependencies": {
     "jshint": "^2.0.0",
     "loggy": "~0.2.0",
-    "chalk": "~0.5.1",
-    "pluralize": "~1.1.2"
+    "chalk": "^1.0.0",
+    "pluralize": "^1.1.2"
   },
   "devDependencies": {
-    "mocha": "1.11.0",
-    "chai": "1.7.0",
-    "fake-fs": "0.2.1"
+    "mocha": "^2.1.0",
+    "chai": "^2.1.0",
+    "fake-fs": "^0.5.0"
   }
 }
