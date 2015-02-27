@@ -34,7 +34,7 @@ describe('Plugin', function() {
     var content = 'var a = 228;;'
 
     plugin.lint(content, 'file.js', function(error) {
-      expect(error).to.equal('Unnecessary semicolon. (error) at line 1, column 13');
+      expect(error).to.contain('Unnecessary semicolon');
       done();
     });
   });
@@ -63,7 +63,7 @@ describe('Plugin', function() {
     // remove the preloaded jshint options
     delete plugin.config.plugins.jshint.options
     delete plugin.config.plugins.jshint.globals
-  
+
 
     var jshintrc = {
       globals: {
@@ -74,7 +74,7 @@ describe('Plugin', function() {
 
     fs = new fakefs;
     fs.file('.jshintrc', JSON.stringify(jshintrc));
-    fs.patch()   
+    fs.patch();
 
     plugin.constructor(plugin.config);
     expect(plugin.globals).to.eql(jshintrc.globals);
