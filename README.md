@@ -20,7 +20,7 @@ You can customize jshint config by changing brunch config:
 config =
   plugins:
     jshint:
-      pattern: /^app\/.*\.js$/
+      pattern: /^app[\\\/].*\.js$/ # matches any js files under the app/ dir
       options:
         bitwise: true
         curly: true
