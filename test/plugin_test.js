@@ -1,8 +1,8 @@
 describe('Plugin', function() {
-  var plugin;
+  var plugin, pluginCfg;
 
   beforeEach(function() {
-    plugin = new Plugin({
+    pluginCfg = {
       paths: {app: 'app'},
       plugins: {
         jshint: {
@@ -10,7 +10,8 @@ describe('Plugin', function() {
           globals: {stuff: true}
         }
       }
-    });
+    };
+    plugin = new Plugin(pluginCfg);
   });
 
   it('should be an object', function() {
@@ -22,37 +23,62 @@ describe('Plugin', function() {
   });
 
   it('should lint correctly', function(done) {
-    var content = 'var a = 228;'
+    var content = 'var a = 228;';
 
-    plugin.lint(content, 'file.js', function(error) {
+    plugin.lint(content, 'app/file.js', function(error) {
       expect(error).to.not.be.ok;
       done();
     });
   });
 
   it('should give correct errors', function(done) {
-    var content = 'var a = 228;;'
+    var content = 'var a = 228;;';
 
-    plugin.lint(content, 'file.js', function(error) {
+    plugin.lint(content, 'app/file.js', function(error) {
+      expect(error).to.contain('Unnecessary semicolon');
+      done();
+    });
+  });
+
+  it('should ignore errors in paths other than "^app/..." by default', function(done) {
+    var content = 'var a = 228;;';
+
+    expect(plugin.config.plugins.jshint.pattern).to.not.exist;
+
+    plugin.lint(content, 'vendor/file.js', function(error) {
+      expect(error).to.not.exist;
+      done();
+    });
+  });
+
+
+  it('should consider other paths when the config contains a respective pattern', function(done) {
+    pluginCfg.plugins.jshint.pattern = /^(vendor|app)\/.*\.js$/;
+    plugin = new Plugin(pluginCfg);
+
+    var content = 'var a = 228;;';
+
+    plugin.lint(content, 'vendor/file.js', function(error) {
+      expect(error).to.exist;
       expect(error).to.contain('Unnecessary semicolon');
       done();
     });
   });
 
   it('should read configs global options list', function(done) {
-    var content = 'function a() {return stuff == null;}'
+    var content = 'function a() {return stuff == null;}';
 
-    plugin.lint(content, 'file.js', function(error) {
-      expect(error).to.equal(undefined)
+    plugin.lint(content, 'app/file.js', function(error) {
+      expect(error).to.equal(undefined);
       done();
     });
   });
 
   it('should not return errors if warn_only is enabled', function(done){
-    plugin.warnOnly = true
-    var content = 'var a = 228;;'
+    plugin.warnOnly = true;
+    var content = 'var a = 228;;';
 
-    plugin.lint(content, 'file.js', function(warn){
+    plugin.lint(content, 'app/file.js', function(warn){
       expect(warn).to.match(/^warn/);
       expect(warn).to.be.ok;
       done();
@@ -61,8 +87,8 @@ describe('Plugin', function() {
 
   it('should read options and globals from .jshintrc', function(done){
     // remove the preloaded jshint options
-    delete plugin.config.plugins.jshint.options
-    delete plugin.config.plugins.jshint.globals
+    delete plugin.config.plugins.jshint.options;
+    delete plugin.config.plugins.jshint.globals;
 
 
     var jshintrc = {
@@ -70,7 +96,7 @@ describe('Plugin', function() {
         stuff: true
       },
       undef: true
-    }
+    };
 
     fs = new fakefs;
     fs.file('.jshintrc', JSON.stringify(jshintrc));
