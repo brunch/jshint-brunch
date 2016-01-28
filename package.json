@@ -8,10 +8,9 @@
     "type": "git",
     "url": "git@github.com:brunch/jshint-brunch.git"
   },
-  "main": "./lib/index",
+  "main": "./index",
   "scripts": {
-    "prepublish": "rm -rf lib && coffee --bare --output lib/ src/",
-    "test": "node_modules/.bin/mocha --require test/common.js"
+    "test": "node_modules/.bin/eslint index.js && node_modules/.bin/mocha"
   },
   "dependencies": {
     "jshint": "^2.0.0",
@@ -22,6 +21,7 @@
   "devDependencies": {
     "mocha": "^2.1.0",
     "chai": "^2.1.0",
-    "fake-fs": "^0.5.0"
+    "fake-fs": "^0.5.0",
+    "eslint": "^1.10.3"
   }
 }
