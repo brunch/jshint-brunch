@@ -1,3 +1,8 @@
+var expect = require('chai').expect;
+var Plugin = require('.');
+var fakefs = require('fake-fs');
+var fs = require('fs');
+
 describe('Plugin', function() {
   var plugin, pluginCfg;
 
@@ -25,16 +30,13 @@ describe('Plugin', function() {
   it('should lint correctly', function(done) {
     var content = 'var a = 228;';
 
-    plugin.lint(content, 'app/file.js', function(error) {
-      expect(error).to.not.be.ok;
-      done();
-    });
+    plugin.lint(content, 'app/file.js').then(() => done(), error => expect(error).to.not.be.ok);
   });
 
   it('should give correct errors', function(done) {
     var content = 'var a = 228;;';
 
-    plugin.lint(content, 'app/file.js', function(error) {
+    plugin.lint(content, 'app/file.js').then(null, error => {
       expect(error).to.contain('Unnecessary semicolon');
       done();
     });
@@ -45,10 +47,7 @@ describe('Plugin', function() {
 
     expect(plugin.config.plugins.jshint.pattern).to.not.exist;
 
-    plugin.lint(content, 'vendor/file.js', function(error) {
-      expect(error).to.not.exist;
-      done();
-    });
+    plugin.lint(content, 'vendor/file.js').then(() => done(), error => expect(error).to.not.be.ok);
   });
 
 
@@ -58,7 +57,7 @@ describe('Plugin', function() {
 
     var content = 'var a = 228;;';
 
-    plugin.lint(content, 'vendor/file.js', function(error) {
+    plugin.lint(content, 'vendor/file.js').then(null, error => {
       expect(error).to.exist;
       expect(error).to.contain('Unnecessary semicolon');
       done();
@@ -68,17 +67,14 @@ describe('Plugin', function() {
   it('should read configs global options list', function(done) {
     var content = 'function a() {return stuff == null;}';
 
-    plugin.lint(content, 'app/file.js', function(error) {
-      expect(error).to.equal(undefined);
-      done();
-    });
+    plugin.lint(content, 'app/file.js').then(() => done(), error => expect(error).to.not.be.ok);
   });
 
   it('should not return errors if warn_only is enabled', function(done){
     plugin.warnOnly = true;
     var content = 'var a = 228;;';
 
-    plugin.lint(content, 'app/file.js', function(warn){
+    plugin.lint(content, 'app/file.js').then(null, warn => {
       expect(warn).to.match(/^warn/);
       expect(warn).to.be.ok;
       done();
@@ -102,7 +98,7 @@ describe('Plugin', function() {
     fs.file('.jshintrc', JSON.stringify(jshintrc));
     fs.patch();
 
-    plugin.constructor(plugin.config);
+    plugin = new Plugin(plugin.config);
     expect(plugin.globals).to.eql(jshintrc.globals);
     delete(jshintrc.globals);
     expect(plugin.options).to.eql(jshintrc);
