@@ -1,3 +1,6 @@
+# jshint-brunch 2.0.0 (Jan 29, 2016)
+* Updated source code & API. The plugin would now only work with Brunch 2.2 and higher.
+
 # jshint-brunch 1.8.0 (27 February 2015)
 * Added support for third-party reporters
 * Cleaned up formatting of default error output
