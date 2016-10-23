@@ -49,8 +49,9 @@ class JSHintLinter {
     }
   }
 
-  lint(data, path) {
-    const success = !this.pattern.test(path) || jshint(data, this.options, this.globals);
+  lint(file) {
+    const path = file.path;
+    const success = !this.pattern.test(path) || jshint(file.data, this.options, this.globals);
     if (success) {
       return Promise.resolve();
     } else {
