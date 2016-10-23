@@ -5,6 +5,8 @@ var fs = require('fs');
 
 describe('Plugin', function() {
   var plugin, pluginCfg;
+  var correctData = 'var a = 228;';
+  var fileMock = {data: correctData + ';', path: 'app/file.js'};
 
   beforeEach(function() {
     pluginCfg = {
@@ -28,26 +30,19 @@ describe('Plugin', function() {
   });
 
   it('should lint correctly', function(done) {
-    var content = 'var a = 228;';
-
-    plugin.lint(content, 'app/file.js').then(() => done(), error => expect(error).to.not.be.ok);
+    plugin.lint({data: correctData, path: 'app/file.js'}).then(() => done(), error => expect(error).to.not.be.ok);
   });
 
   it('should give correct errors', function(done) {
-    var content = 'var a = 228;;';
-
-    plugin.lint(content, 'app/file.js').then(null, error => {
+    plugin.lint(fileMock).then(null, error => {
       expect(error).to.contain('Unnecessary semicolon');
       done();
     });
   });
 
   it('should ignore errors in paths other than "^app/..." by default', function(done) {
-    var content = 'var a = 228;;';
-
     expect(plugin.config.plugins.jshint.pattern).to.not.exist;
-
-    plugin.lint(content, 'vendor/file.js').then(() => done(), error => expect(error).to.not.be.ok);
+    plugin.lint({data: 'var a = 228;;', path: 'vendor/file.js'}).then(() => done(), error => expect(error).to.not.be.ok);
   });
 
 
@@ -57,7 +52,7 @@ describe('Plugin', function() {
 
     var content = 'var a = 228;;';
 
-    plugin.lint(content, 'vendor/file.js').then(null, error => {
+    plugin.lint({data: content, path: 'vendor/file.js'}).then(null, error => {
       expect(error).to.exist;
       expect(error).to.contain('Unnecessary semicolon');
       done();
@@ -65,16 +60,14 @@ describe('Plugin', function() {
   });
 
   it('should read configs global options list', function(done) {
-    var content = 'function a() {return stuff == null;}';
+    var mocked = Object.assign({}, fileMock, {data: 'function a() {return stuff == null;}'})
 
-    plugin.lint(content, 'app/file.js').then(() => done(), error => expect(error).to.not.be.ok);
+    plugin.lint(mocked).then(() => done(), error => expect(error).to.not.be.ok);
   });
 
   it('should not return errors if warn_only is enabled', function(done){
     plugin.warnOnly = true;
-    var content = 'var a = 228;;';
-
-    plugin.lint(content, 'app/file.js').then(null, warn => {
+    plugin.lint(fileMock).then(() => done(), warn => {
       expect(warn).to.match(/^warn/);
       expect(warn).to.be.ok;
       done();

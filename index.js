@@ -50,8 +50,7 @@ class JSHintLinter {
   }
 
   lint(file) {
-    const path = file.path;
-    const success = !this.pattern.test(path) || jshint(file.data, this.options, this.globals);
+    const success = !this.pattern.test(file.path) || jshint(file.data, this.options, this.globals);
     if (success) {
       return Promise.resolve();
     } else {
@@ -62,7 +61,7 @@ class JSHintLinter {
         const results = errors.map(error => {
           return {
             error: error,
-            file: path
+            file: file.path
           };
         });
         this.reporter.reporter(results, undefined, this.reporterOptions);
