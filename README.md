@@ -3,7 +3,7 @@ Adds JSHint support to
 [brunch](http://brunch.io).
 
 ## Usage
-Install the plugin via npm with `npm install --save jshint-brunch`.
+Install the plugin via npm with `npm install --save-dev jshint-brunch`.
 
 Or, do manual install:
 
