@@ -1,52 +1,52 @@
-var expect = require('chai').expect;
-var Plugin = require('.');
-var fakefs = require('fake-fs');
-var fs = require('fs');
+/* eslint no-undef: 0, no-unused-expressions: 0 */
+'use strict';
 
-describe('Plugin', function() {
-  var plugin, pluginCfg;
-  var correctData = 'var a = 228;';
-  var fileMock = {data: correctData + ';', path: 'app/file.js'};
+const expect = require('chai').expect;
+const Plugin = require('.');
+const FakeFS = require('fake-fs');
 
-  beforeEach(function() {
+describe('Plugin', () => {
+  let plugin, pluginCfg;
+  const correctData = 'var a = 228;';
+  const fileMock = {data: `${correctData};`, path: 'app/file.js'};
+
+  beforeEach(() => {
     pluginCfg = {
       paths: {app: 'app'},
       plugins: {
         jshint: {
           options: {eqnull: true, undef: true},
-          globals: {stuff: true}
-        }
-      }
+          globals: {stuff: true},
+        },
+      },
     };
     plugin = new Plugin(pluginCfg);
   });
 
-  it('should be an object', function() {
-    expect(plugin).to.be.ok;
-  });
+  it('should be an object', () => expect(plugin).to.be.ok);
 
-  it('should has #lint method', function() {
+  it('should has #lint method', () => {
     expect(plugin.lint).to.be.an.instanceof(Function);
   });
 
-  it('should lint correctly', function(done) {
+  it('should lint correctly', done => {
     plugin.lint({data: correctData, path: 'app/file.js'}).then(() => done(), error => expect(error).to.not.be.ok);
   });
 
-  it('should give correct errors', function(done) {
+  it('should give correct errors', done => {
     plugin.lint(fileMock).then(null, error => {
       expect(error).to.contain('Unnecessary semicolon');
       done();
     });
   });
 
-  it('should ignore errors in paths other than "^app/..." by default', function(done) {
+  it('should ignore errors in paths other than "^app/..." by default', done => {
     expect(plugin.config.plugins.jshint.pattern).to.not.exist;
     plugin.lint({data: 'var a = 228;;', path: 'vendor/file.js'}).then(() => done(), error => expect(error).to.not.be.ok);
   });
 
 
-  it('should consider other paths when the config contains a respective pattern', function(done) {
+  it('should consider other paths when the config contains a respective pattern', done => {
     pluginCfg.plugins.jshint.pattern = /^(vendor|app)\/.*\.js$/;
     plugin = new Plugin(pluginCfg);
 
@@ -59,13 +59,13 @@ describe('Plugin', function() {
     });
   });
 
-  it('should read configs global options list', function(done) {
-    var mocked = Object.assign({}, fileMock, {data: 'function a() {return stuff == null;}'})
+  it('should read configs global options list', done => {
+    var mocked = Object.assign({}, fileMock, {data: 'function a() {return stuff == null;}'});
 
     plugin.lint(mocked).then(() => done(), error => expect(error).to.not.be.ok);
   });
 
-  it('should not return errors if warn_only is enabled', function(done){
+  it('should not return errors if warn_only is enabled', done => {
     plugin.warnOnly = true;
     plugin.lint(fileMock).then(() => done(), warn => {
       expect(warn).to.match(/^warn/);
@@ -74,7 +74,7 @@ describe('Plugin', function() {
     });
   });
 
-  it('should read options and globals from .jshintrc', function(done){
+  it('should read options and globals from .jshintrc', done => {
     // remove the preloaded jshint options
     delete plugin.config.plugins.jshint.options;
     delete plugin.config.plugins.jshint.globals;
@@ -82,18 +82,18 @@ describe('Plugin', function() {
 
     var jshintrc = {
       globals: {
-        stuff: true
+        stuff: true,
       },
-      undef: true
+      undef: true,
     };
 
-    fs = new fakefs;
-    fs.file('.jshintrc', JSON.stringify(jshintrc));
-    fs.patch();
+    const ffs = new FakeFS();
+    ffs.file('.jshintrc', JSON.stringify(jshintrc));
+    ffs.patch();
 
     plugin = new Plugin(plugin.config);
     expect(plugin.globals).to.eql(jshintrc.globals);
-    delete(jshintrc.globals);
+    delete jshintrc.globals;
     expect(plugin.options).to.eql(jshintrc);
     done();
   });
