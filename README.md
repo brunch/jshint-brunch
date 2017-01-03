@@ -1,40 +1,45 @@
-## jshint-brunch
-Adds JSHint support to
-[brunch](http://brunch.io).
+# jshint-brunch
+
+Adds JSHint support to [brunch](http://brunch.io).
 
 ## Usage
+
 Install the plugin via npm with `npm install --save-dev jshint-brunch`.
 
 Or, do manual install:
 
-* Add `"jshint-brunch": "x.y.z"` to `package.json` of your brunch app.
-  Pick a plugin version that corresponds to your minor (y) brunch version.
+* Add `"jshint-brunch": "x.y.z"` to `package.json` of your brunch app. Pick a plugin version that corresponds to your minor (y) brunch version.
 * If you want to use git version of plugin, add
 `"jshint-brunch": "git+ssh://git@github.com:brunch/jshint-brunch.git"`.
 
 By default, only files in your `config.paths.app` are linted.
 
-You can customize jshint config by changing brunch config:
+You can customize JSHint config by changing brunch config:
 
-```coffeescript
-config =
-  plugins:
-    jshint:
-      pattern: /^app[\\\/].*\.js$/ # matches any js files under the app/ dir
-      options:
-        bitwise: true
+```js
+module.exports = {
+  plugins: {
+    jshint: {
+      pattern: /^app[\\\/].*\.js$/,
+      options: {
+        bitwise: true,
         curly: true
-      globals:
+      },
+      globals: {
         jQuery: true
+      },
       warnOnly: true
+    }
+  }
+};
 ```
 
 Every sub-option (`pattern`, `options`, `globals`, `warnOnly`) is optional.
 
-If `warnOnly` is set to true then jshint errors will output as console warnings.
+If `warnOnly` is set to true then JSHint errors will output as console warnings.
 This allows the build process to continue rather than exiting on any linter errors.
 
-Alternatively if you prefer to use a `.jshintrc` file, remove all jshint options
+Alternatively if you prefer to use a `.jshintrc` file, remove all JSHint options
 from the brunch config and place your `.jshintrc` file in the same location as
 your brunch config.
 
@@ -42,7 +47,7 @@ your brunch config.
 
 The MIT License (MIT)
 
-Copyright (c) 2012-2013 Paul Miller (http://paulmillr.com)
+Copyright (c) 2012-2017 Paul Miller (http://paulmillr.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
