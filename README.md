@@ -2,6 +2,8 @@
 
 Adds JSHint support to [brunch](http://brunch.io).
 
+> This plugin is deprecated in favor of [eslint-brunch](https://github.com/brunch/eslint-brunch). Please switch to ESLint, a more modern replacement.
+
 ## Usage
 
 Install the plugin via npm with `npm install --save-dev jshint-brunch`.
